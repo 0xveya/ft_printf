@@ -33,8 +33,7 @@ SRCS		= $(SRC_DIR)/even_even_more_normalization.c \
 			  $(SRC_DIR)/print_string.c \
 			  $(SRC_DIR)/print_uint.c \
 			  $(SRC_DIR)/printf.c \
-			  $(SRC_DIR)/printf_dispatch.c \
-			  $(SRC_DIR)/testingshit.c
+			  $(SRC_DIR)/printf_dispatch.c
 
 
 AR		= ar
