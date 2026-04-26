@@ -44,29 +44,3 @@ void	ft_format_init(t_format *f)
 	f->has_precision = 0;
 	f->type = conv_none;
 }
-
-int	ft_is_flag(char c)
-{
-	return (c == '-' || c == '0' || c == '#' || c == '+' || c == ' ');
-}
-
-t_conv	ft_char_to_conv(char c)
-{
-	if (c == 'c')
-		return (conv_char);
-	if (c == 's')
-		return (conv_str);
-	if (c == 'p')
-		return (conv_ptr);
-	if (c == 'd' || c == 'i')
-		return (conv_int);
-	if (c == 'u')
-		return (conv_uint);
-	if (c == 'x')
-		return (conv_hex_low);
-	if (c == 'X')
-		return (conv_hex_up);
-	if (c == '%')
-		return (conv_percent);
-	return (conv_none);
-}

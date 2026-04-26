@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-int	ft_parse_flags(const char *s, int i, t_format *f)
+static int	ft_parse_flags(const char *s, int i, t_format *f)
 {
 	while (ft_is_flag(s[i]))
 	{
@@ -31,7 +31,7 @@ int	ft_parse_flags(const char *s, int i, t_format *f)
 	return (i);
 }
 
-int	ft_parse_width(const char *s, int i, t_format *f)
+static int	ft_parse_width(const char *s, int i, t_format *f)
 {
 	while (s[i] >= '0' && s[i] <= '9')
 	{
@@ -41,7 +41,7 @@ int	ft_parse_width(const char *s, int i, t_format *f)
 	return (i);
 }
 
-int	ft_parse_precision(const char *s, int i, t_format *f)
+static int	ft_parse_precision(const char *s, int i, t_format *f)
 {
 	if (s[i] == '.')
 	{
@@ -57,7 +57,7 @@ int	ft_parse_precision(const char *s, int i, t_format *f)
 	return (i);
 }
 
-int	ft_parse_type(const char *s, int i, t_format *f)
+static int	ft_parse_type(const char *s, int i, t_format *f)
 {
 	f->type = ft_char_to_conv(s[i]);
 	if (f->type != conv_none)
@@ -69,5 +69,7 @@ int	ft_parse_format(const char *s, int i, t_format *f)
 {
 	i = ft_parse_flags(s, i, f);
 	i = ft_parse_width(s, i, f);
-	return (i = ft_parse_precision(s, i, f), i = ft_parse_type(s, i, f), i);
+	i = ft_parse_precision(s, i, f);
+	i = ft_parse_type(s, i, f);
+	return (i);
 }

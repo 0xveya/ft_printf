@@ -42,14 +42,6 @@ typedef struct s_format
 	t_conv		type;
 }				t_format;
 
-typedef int		(*t_print_fn)(t_format *f, va_list *args);
-
-typedef struct s_dispatch
-{
-	t_conv		type;
-	t_print_fn	fn;
-}				t_dispatch;
-
 typedef struct s_intfmt
 {
 	long		nb;
@@ -59,27 +51,15 @@ typedef struct s_intfmt
 	int			pad;
 }				t_intfmt;
 
-void			ft_apply_clear_hash(t_format *f);
-void			ft_apply_clear_sign_flags(t_format *f);
-void			ft_apply_minus_overrides_zero(t_format *f);
-void			ft_apply_negative_width_rule(t_format *f);
-void			ft_apply_plus_overrides_space(t_format *f);
-void			ft_apply_precision_disables_zero(t_format *f);
 t_conv			ft_char_to_conv(char c);
 int				ft_dispatch_print(t_format *f, va_list args);
-int				ft_flag_minus_overrides_zero(t_format *f);
-int				ft_flag_plus_overrides_space(t_format *f);
 void			ft_format_init(t_format *f);
 void			ft_format_normalize(t_format *f);
-int				ft_hash_invalid_for_type(t_format *f);
 int				ft_is_flag(char c);
 int				ft_parse_format(const char *fmt, int i, t_format *f);
-int				ft_precision_disables_zero(t_format *f);
 int				ft_printf(const char *format, ...);
 int				ft_putchar_count(char c);
 int				ft_putnchar_count(char c, int n);
-int				ft_sign_flags_invalid_for_type(t_format *f);
-int				ft_width_negative(t_format *f);
 
 int				ft_print_char_fmt(int c, t_format *f);
 int				ft_print_hex_low_fmt(unsigned int n, t_format *f);

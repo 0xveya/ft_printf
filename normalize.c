@@ -12,30 +12,20 @@
 
 #include "ft_printf.h"
 
-int	ft_precision_negative(t_format *f)
-{
-	return (f->precision < 0);
-}
-
-void	ft_apply_negative_precision_rule(t_format *f)
-{
-	f->precision = 0;
-}
-
 void	ft_format_normalize(t_format *f)
 {
-	if (ft_flag_minus_overrides_zero(f))
-		ft_apply_minus_overrides_zero(f);
-	if (ft_flag_plus_overrides_space(f))
-		ft_apply_plus_overrides_space(f);
-	if (ft_precision_disables_zero(f))
-		ft_apply_precision_disables_zero(f);
-	if (ft_hash_invalid_for_type(f))
-		ft_apply_clear_hash(f);
-	if (ft_sign_flags_invalid_for_type(f))
-		ft_apply_clear_sign_flags(f);
-	if (ft_width_negative(f))
-		ft_apply_negative_width_rule(f);
-	if (ft_precision_negative(f))
-		ft_apply_negative_precision_rule(f);
+	if (f->minus)
+		f->zero = 0;
+	if (f->plus)
+		f->space = 0;
+	if (f->has_precision && (f->type == conv_int || f->type == conv_uint
+			|| f->type == conv_hex_low || f->type == conv_hex_up))
+		f->zero = 0;
+	if (f->type != conv_hex_low && f->type != conv_hex_up)
+		f->hash = 0;
+	if (f->type != conv_int)
+	{
+		f->plus = 0;
+		f->space = 0;
+	}
 }

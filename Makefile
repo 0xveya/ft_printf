@@ -17,14 +17,11 @@ CFLAGS		= -Wall -Wextra -Werror
 RM			= rm -f
 
 SRC_DIR		= .
-SRCS		= $(SRC_DIR)/even_even_more_normalization.c \
-			  $(SRC_DIR)/even_more_normalization.c \
-			  $(SRC_DIR)/format_parser.c \
-			  $(SRC_DIR)/helpers.c \
+SRCS		= $(SRC_DIR)/helpers.c \
 			  $(SRC_DIR)/helpers2.c \
-			  $(SRC_DIR)/more_normalization.c \
 			  $(SRC_DIR)/normalize.c \
 			  $(SRC_DIR)/parse.c \
+			  $(SRC_DIR)/parse_utils.c \
 			  $(SRC_DIR)/print_char.c \
 			  $(SRC_DIR)/print_hex.c \
 			  $(SRC_DIR)/print_int.c \
@@ -56,7 +53,9 @@ clean:
 fclean: clean
 	$(RM) $(NAME)
 
-re: fclean all
+re:
+	$(MAKE) fclean
+	$(MAKE) all
 
 .PHONY: all clean fclean re
 .DEFAULT_GOAL := all
