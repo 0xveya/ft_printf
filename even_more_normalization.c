@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/26 17:52:26 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 17:53:54 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:53:28 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	ft_apply_precision_disables_zero(t_format *f)
 
 int	ft_hash_invalid_for_type(t_format *f)
 {
-	return (f->hash && f->type != conv_int && f->type != conv_uint);
+	return (f->hash && f->type != conv_hex_low && f->type != conv_hex_up);
 }
 
 void	ft_apply_clear_hash(t_format *f)
