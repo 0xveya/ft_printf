@@ -6,11 +6,12 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/25 01:33:21 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:13:09 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:30:24 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+#include <stdio.h>
 
 int	ft_printf(const char *fmt, ...)
 {

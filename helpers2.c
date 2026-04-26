@@ -1,18 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   print_percent.c                                   :+:      :+:    :+:    */
+/*   helpers2.c                                        :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/04/26 18:14:39 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:34:12 by sfurst          ###   ########.fr        */
+/*   Created: 2026/04/26 18:48:24 by sfurst           #+#    #+#              */
+/*   Updated: 2026/04/26 18:48:32 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_print_percent_fmt(t_format *f)
+int	ft_strlen(char *s)
 {
-	return ((void)f, ft_putchar_count('%'));
+	int	len;
+
+	len = 0;
+	while ((s[len]) && (len++, 1))
+		;
+	return (len);
 }

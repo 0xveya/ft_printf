@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/26 17:54:21 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 17:55:31 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:33:13 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 int	ft_sign_flags_invalid_for_type(t_format *f)
 {
-	return (f->minus || f->plus);
+	return ((f->plus || f->space) && f->type != conv_int);
 }
 
 void	ft_apply_clear_sign_flags(t_format *f)
 {
-	f->minus = 0;
 	f->plus = 0;
+	f->space = 0;
 }
 
 int	ft_width_negative(t_format *f)

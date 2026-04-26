@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/26 16:51:42 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 17:43:24 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:28:06 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int	ft_parse_flags(const char *s, int i, t_format *f)
 	}
 	return (i);
 }
+
 int	ft_parse_width(const char *s, int i, t_format *f)
 {
 	while (s[i] >= '0' && s[i] <= '9')

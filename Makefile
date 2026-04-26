@@ -6,7 +6,7 @@
 #    By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+          #
 #                                                +#+#+#+#+#+   +#+             #
 #    Created: 2026/04/23 20:44:50 by sfurst           #+#    #+#               #
-#    Updated: 2026/04/26 18:19:58 by sfurst          ###   ########.fr         #
+#    Updated: 2026/04/26 18:47:29 by sfurst          ###   ########.fr         #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRCS		= $(SRC_DIR)/even_even_more_normalization.c \
 			  $(SRC_DIR)/even_more_normalization.c \
 			  $(SRC_DIR)/format_parser.c \
 			  $(SRC_DIR)/helpers.c \
+			  $(SRC_DIR)/helpers2.c \
 			  $(SRC_DIR)/more_normalization.c \
 			  $(SRC_DIR)/normalize.c \
 			  $(SRC_DIR)/parse.c \
@@ -35,8 +36,6 @@ SRCS		= $(SRC_DIR)/even_even_more_normalization.c \
 			  $(SRC_DIR)/printf_dispatch.c \
 			  $(SRC_DIR)/testingshit.c
 
-LIBFT_DIR	= libft
-LIBFT		= $(LIBFT_DIR)/libft.a
 
 AR		= ar
 ARFLAGS		= rcs
@@ -46,23 +45,17 @@ DEPS		= $(OBJS:.o=.d)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT)
-	cp $(LIBFT) $(NAME)
+$(NAME): $(OBJS)
 	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
 
-$(LIBFT):
-	$(MAKE) -C $(LIBFT_DIR)
-
 %.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -I$(LIBFT_DIR) -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS)  -c $< -o $@
 
 clean:
 	$(RM) $(OBJS)
-	$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
 	$(RM) $(NAME)
-	$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
 

@@ -6,15 +6,15 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/25 01:24:51 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:13:22 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:48:42 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include "./libft/libft.h"
 # include <stdarg.h>
+# include <unistd.h>
 
 typedef enum e_conv
 {
@@ -50,6 +50,15 @@ typedef struct s_dispatch
 	t_print_fn	fn;
 }				t_dispatch;
 
+typedef struct s_intfmt
+{
+	long		nb;
+	int			sign;
+	int			digits_len;
+	int			zeroes;
+	int			pad;
+}				t_intfmt;
+
 void			ft_apply_clear_hash(t_format *f);
 void			ft_apply_clear_sign_flags(t_format *f);
 void			ft_apply_minus_overrides_zero(t_format *f);
@@ -80,5 +89,8 @@ int				ft_print_percent_fmt(t_format *f);
 int				ft_print_ptr_fmt(void *ptr, t_format *f);
 int				ft_print_str_fmt(char *s, t_format *f);
 int				ft_print_uint_fmt(unsigned int n, t_format *f);
+int				ft_putnbr_base_count(unsigned long n, char *base);
+
+int				ft_strlen(char *s);
 
 #endif
