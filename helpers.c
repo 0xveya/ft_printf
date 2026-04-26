@@ -1,0 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                       :::      ::::::::    */
+/*   helpers.c                                         :+:      :+:    :+:    */
+/*                                                   +:+ +:+         +:+      */
+/*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
+/*                                               +#+#+#+#+#+   +#+            */
+/*   Created: 2026/04/26 16:45:56 by sfurst           #+#    #+#              */
+/*   Updated: 2026/04/26 17:42:58 by sfurst          ###   ########.fr        */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ft_printf.h"
+
+int	ft_putchar_count(char c)
+{
+	return (write(1, &c, 1), 1);
+}
+
+void	ft_format_init(t_format *f)
+{
+	f->minus = 0;
+	f->zero = 0;
+	f->hash = 0;
+	f->plus = 0;
+	f->space = 0;
+	f->width = 0;
+	f->precision = 0;
+	f->has_precision = 0;
+	f->type = conv_none;
+}
+
+int	ft_is_flag(char c)
+{
+	return (c == '-' || c == '0' || c == '#' || c == '+' || c == ' ');
+}
+
+t_conv	ft_char_to_conv(char c)
+{
+	if (c == 'c')
+		return (conv_char);
+	if (c == 's')
+		return (conv_str);
+	if (c == 'p')
+		return (conv_ptr);
+	if (c == 'd' || c == 'i')
+		return (conv_int);
+	if (c == 'u')
+		return (conv_uint);
+	if (c == 'x')
+		return (conv_hex_low);
+	if (c == 'X')
+		return (conv_hex_up);
+	if (c == '%')
+		return (conv_percent);
+	return (conv_none);
+}
