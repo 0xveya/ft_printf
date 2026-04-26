@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/26 16:45:56 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 17:42:58 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/04/26 18:12:49 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,21 @@
 int	ft_putchar_count(char c)
 {
 	return (write(1, &c, 1), 1);
+}
+
+int	ft_putnchar_count(char c, int n)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (i < n)
+	{
+		count += ft_putchar_count(c);
+		i++;
+	}
+	return (count);
 }
 
 void	ft_format_init(t_format *f)
