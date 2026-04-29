@@ -12,15 +12,29 @@
 
 #include "ft_printf.h"
 
+static int	ft_write_str_pad(int *count, int pad)
+{
+	int	written;
+
+	written = ft_putnchar_count(' ', pad);
+	if (written < 0)
+		return (-1);
+	*count += written;
+	return (0);
+}
+
 int	ft_putnstr_count(char *s, int n)
 {
 	int	count;
+	int	written;
 
 	count = 0;
 	while (s[count] && count < n)
 	{
-		ft_putchar_count(s[count]);
-		count++;
+		written = ft_putchar_count(s[count]);
+		if (written < 0)
+			return (-1);
+		count += written;
 	}
 	return (count);
 }
@@ -40,10 +54,13 @@ int	ft_print_str_fmt(char *s, t_format *f)
 	if (pad < 0)
 		pad = 0;
 	count = 0;
-	if (!f->minus)
-		count += ft_putnchar_count(' ', pad);
-	count += ft_putnstr_count(s, len);
-	if (f->minus)
-		count += ft_putnchar_count(' ', pad);
+	if (!f->minus && ft_write_str_pad(&count, pad) < 0)
+		return (-1);
+	len = ft_putnstr_count(s, len);
+	if (len < 0)
+		return (-1);
+	count += len;
+	if (f->minus && ft_write_str_pad(&count, pad) < 0)
+		return (-1);
 	return (count);
 }

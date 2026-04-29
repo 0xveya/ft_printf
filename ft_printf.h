@@ -58,6 +58,7 @@ void			ft_format_normalize(t_format *f);
 int				ft_is_flag(char c);
 int				ft_parse_format(const char *fmt, int i, t_format *f);
 int				ft_printf(const char *format, ...);
+int				ft_write_count(char *s, int len);
 int				ft_putchar_count(char c);
 int				ft_putnchar_count(char c, int n);
 
@@ -70,6 +71,7 @@ int				ft_print_ptr_fmt(void *ptr, t_format *f);
 int				ft_print_str_fmt(char *s, t_format *f);
 int				ft_print_uint_fmt(unsigned int n, t_format *f);
 int				ft_putnbr_base_count(unsigned long n, char *base);
+int				ft_putnstr_count(char *s, int n);
 
 int				ft_strlen(char *s);
 

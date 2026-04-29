@@ -17,18 +17,23 @@ int	ft_putstr_count(char *s)
 {
 	int	len;
 
-	return (len = ft_strlen(s), write(1, s, len), len);
+	len = ft_strlen(s);
+	return (ft_write_count(s, len));
 }
 
 int	ft_print_ptr_fmt(void *ptr, t_format *f)
 {
 	int	count;
+	int	written;
 
 	(void)f;
 	if (!ptr)
 		return (ft_putstr_count("(nil)"));
-	count = 0;
-	count += ft_putstr_count("0x");
-	count += ft_putnbr_base_count((uintptr_t)ptr, "0123456789abcdef");
-	return (count);
+	count = ft_putstr_count("0x");
+	if (count < 0)
+		return (-1);
+	written = ft_putnbr_base_count((uintptr_t)ptr, "0123456789abcdef");
+	if (written < 0)
+		return (-1);
+	return (count + written);
 }

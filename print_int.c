@@ -22,33 +22,16 @@ static int	ft_numlen_base(unsigned long n, int base)
 	return (len);
 }
 
-static int	ft_int_sign(long nb, t_format *f)
-{
-	if (nb < 0)
-		return ('-');
-	if (f->plus)
-		return ('+');
-	if (f->space)
-		return (' ');
-	return (0);
-}
-
-int	ft_putnbr_base_count(unsigned long n, char *base)
-{
-	int				count;
-	unsigned long	base_len;
-
-	count = 0;
-	base_len = ft_strlen(base);
-	if (n >= base_len)
-		count += ft_putnbr_base_count(n / base_len, base);
-	return (count += ft_putchar_count(base[n % base_len]), count);
-}
-
 static void	ft_prepare_intfmt(t_intfmt *v, int n, t_format *f)
 {
 	v->nb = n;
-	v->sign = ft_int_sign(v->nb, f);
+	v->sign = 0;
+	if (v->nb < 0)
+		v->sign = '-';
+	else if (f->plus)
+		v->sign = '+';
+	else if (f->space)
+		v->sign = ' ';
 	if (v->nb < 0)
 		v->nb = -v->nb;
 	v->digits_len = ft_numlen_base((unsigned long)v->nb, 10);
@@ -62,6 +45,35 @@ static void	ft_prepare_intfmt(t_intfmt *v, int n, t_format *f)
 		v->pad = 0;
 }
 
+static int	ft_write_int_part(int *count, char c, int n)
+{
+	int	written;
+
+	written = ft_putnchar_count(c, n);
+	if (written < 0)
+		return (-1);
+	*count += written;
+	return (0);
+}
+
+static int	ft_write_int_body(t_intfmt *v, int *count)
+{
+	int	written;
+
+	if (v->sign && ft_putchar_count((char)v->sign) < 0)
+		return (-1);
+	*count += (v->sign != 0);
+	if (ft_write_int_part(count, '0', v->zeroes) < 0)
+		return (-1);
+	if (v->digits_len == 0)
+		return (0);
+	written = ft_putnbr_base_count((unsigned long)v->nb, "0123456789");
+	if (written < 0)
+		return (-1);
+	*count += written;
+	return (0);
+}
+
 int	ft_print_int_fmt(int n, t_format *f)
 {
 	t_intfmt	v;
@@ -69,16 +81,16 @@ int	ft_print_int_fmt(int n, t_format *f)
 
 	ft_prepare_intfmt(&v, n, f);
 	count = 0;
-	if (!f->minus && !f->zero)
-		count += ft_putnchar_count(' ', v.pad);
-	if (v.sign)
-		count += ft_putchar_count((char)v.sign);
 	if (!f->minus && f->zero)
-		count += ft_putnchar_count('0', v.pad);
-	count += ft_putnchar_count('0', v.zeroes);
-	if (v.digits_len > 0)
-		count += ft_putnbr_base_count((unsigned long)v.nb, "0123456789");
-	if (f->minus)
-		count += ft_putnchar_count(' ', v.pad);
+	{
+		v.zeroes += v.pad;
+		v.pad = 0;
+	}
+	if (!f->minus && ft_write_int_part(&count, ' ', v.pad) < 0)
+		return (-1);
+	if (ft_write_int_body(&v, &count) < 0)
+		return (-1);
+	if (f->minus && ft_write_int_part(&count, ' ', v.pad) < 0)
+		return (-1);
 	return (count);
 }

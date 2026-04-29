@@ -16,25 +16,42 @@ static int	ft_putstr_count(char *s)
 {
 	int	len;
 
-	return (len = ft_strlen(s), write(1, s, len), len);
+	len = ft_strlen(s);
+	return (ft_write_count(s, len));
 }
 
 int	ft_print_hex_low_fmt(unsigned int n, t_format *f)
 {
 	int	count;
+	int	written;
 
 	count = 0;
 	if (f->hash && n != 0)
-		count += ft_putstr_count("0x");
-	return (count += ft_putnbr_base_count(n, "0123456789abcdef"), count);
+	{
+		count = ft_putstr_count("0x");
+		if (count < 0)
+			return (-1);
+	}
+	written = ft_putnbr_base_count(n, "0123456789abcdef");
+	if (written < 0)
+		return (-1);
+	return (count + written);
 }
 
 int	ft_print_hex_up_fmt(unsigned int n, t_format *f)
 {
 	int	count;
+	int	written;
 
 	count = 0;
 	if (f->hash && n != 0)
-		count += ft_putstr_count("0X");
-	return (count += ft_putnbr_base_count(n, "0123456789ABCDEF"), count);
+	{
+		count = ft_putstr_count("0X");
+		if (count < 0)
+			return (-1);
+	}
+	written = ft_putnbr_base_count(n, "0123456789ABCDEF");
+	if (written < 0)
+		return (-1);
+	return (count + written);
 }
