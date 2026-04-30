@@ -23,7 +23,7 @@ static int	ft_write_str_pad(int *count, int pad)
 	return (0);
 }
 
-int	ft_putnstr_count(char *s, int n)
+static int	ft_putnstr_count(char *s, int n)
 {
 	int	count;
 	int	written;

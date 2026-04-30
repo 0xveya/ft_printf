@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include <stdint.h>
 
-int	ft_putstr_count(char *s)
+static int	ft_putstr_count(char *s)
 {
 	int	len;
 

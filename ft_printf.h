@@ -71,7 +71,6 @@ int				ft_print_ptr_fmt(void *ptr, t_format *f);
 int				ft_print_str_fmt(char *s, t_format *f);
 int				ft_print_uint_fmt(unsigned int n, t_format *f);
 int				ft_putnbr_base_count(unsigned long n, char *base);
-int				ft_putnstr_count(char *s, int n);
 
 int				ft_strlen(char *s);
 
