@@ -6,7 +6,7 @@
 #    By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+          #
 #                                                +#+#+#+#+#+   +#+             #
 #    Created: 2026/04/23 20:44:50 by sfurst           #+#    #+#               #
-#    Updated: 2026/04/26 18:47:29 by sfurst          ###   ########.fr         #
+#    Updated: 2026/05/03 18:23:31 by sfurst          ###   ########.fr         #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ RM			= rm -f
 SRC_DIR		= .
 SRCS		= $(SRC_DIR)/helpers.c \
 			  $(SRC_DIR)/helpers2.c \
+			  $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/normalize.c \
 			  $(SRC_DIR)/parse.c \
 			  $(SRC_DIR)/parse_utils.c \
