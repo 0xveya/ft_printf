@@ -66,7 +66,11 @@ re:
 	$(MAKE) fclean
 	$(MAKE) all
 
+compiledb:
+	$(MAKE) fclean
+	compiledb -n make
+
 -include $(DEPS)
 
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus clean compiledb fclean re
 .DEFAULT_GOAL := all

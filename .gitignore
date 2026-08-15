@@ -62,3 +62,4 @@ dkms.conf
 libftTester
 subj.pdf
 printfTester
+compile_commands.json
