@@ -23,6 +23,24 @@ Build the library:
 make
 ```
 
+Build through the bonus target:
+
+```sh
+make bonus
+```
+
+The bonus parser and formatting paths are integrated into the same source files
+as the mandatory implementation. For that reason, `make bonus` depends on the
+same `libftprintf.a` target instead of compiling a second set of `_bonus` files.
+If the library is already current, Make reports that there is nothing to rebuild.
+
+The integrated extensions parse the flags `-`, `0`, `#`, `+`, and space, along
+with field width and precision. Signed decimal formatting applies sign, padding,
+alignment, and precision rules; strings and characters apply their relevant
+width, alignment, and precision rules; hexadecimal formatting applies the `#`
+prefix. The mandatory conversions `cspdiuxX%` remain available from the same
+library.
+
 Remove object files:
 
 ```sh
@@ -181,21 +199,83 @@ the compiler to discover and auto-vectorize ordinary scalar loops.
 
 ### SIMD `strlen`
 
-`ft_strlen()` first advances one byte at a time until its pointer is aligned to
-32 bytes. It then loads one aligned AVX2 vector and compares all 32 lanes with a
-zero vector:
+The declaration in the internal header applies AVX2 only to this function:
+
+```c
+int ft_strlen(const char *s) __attribute__((target("avx2")));
+```
+
+The function keeps the original pointer and a moving scan pointer:
+
+```c
+p = s;
+```
+
+`s` remains fixed so `p - s` can produce the final length. Before using an
+aligned vector load, the scalar prefix advances `p` to the next address divisible
+by 32:
+
+```c
+while (((uintptr_t)p & 31) != 0)
+{
+    if (*p == '\0')
+        return ((int)(p - s));
+    p++;
+}
+```
+
+Casting the pointer to `uintptr_t` exposes its numeric address. Because 32 is a
+power of two, the lowest five address bits are zero exactly when the pointer is
+32-byte aligned; `& 31` tests those bits. Every prefix byte is checked before
+advancing, so a short string can finish without entering the vector loop.
+
+```c
+zero = _mm256_setzero_si256();
+```
+
+This creates a 256-bit integer vector whose 32 byte lanes are all zero. It is
+created once and reused for every block.
+
+```c
+v = _mm256_load_si256((const __m256i *)p);
+```
+
+The cast presents the current byte address as a pointer to one 256-bit vector.
+`_mm256_load_si256()` loads the next 32 bytes into `v` and requires the alignment
+established by the scalar prefix.
+
+The loaded bytes are compared with the zero vector and reduced to a normal
+integer mask:
 
 ```c
 mask = (unsigned int)_mm256_movemask_epi8(
         _mm256_cmpeq_epi8(v, zero));
 ```
 
-Equal lanes become all-one bytes. `_mm256_movemask_epi8()` collects their top
-bits into a 32-bit mask, where bit zero describes the first byte and bit 31 the
-last. A nonzero mask means that the block contains a string terminator.
-`__builtin_ctz(mask)` counts the zero bits below the first set bit, producing the
-terminator's position. It is called only when the mask is nonzero because
-`ctz(0)` is undefined.
+`_mm256_cmpeq_epi8()` performs 32 independent byte comparisons. An equal lane
+becomes `0xff`; a different lane becomes `0x00`.
+`_mm256_movemask_epi8()` takes the high bit from each result lane and packs those
+bits into a 32-bit integer. Bit zero describes `p[0]` and bit 31 describes
+`p[31]`, so each set bit marks a NUL byte.
+
+```c
+if (mask != 0)
+    return ((int)(p - s) + __builtin_ctz(mask));
+```
+
+A nonzero mask means the block contains at least one terminator.
+`__builtin_ctz(mask)` counts the zero bits below the least-significant set bit,
+which is the index of the first NUL byte. It is called only after the nonzero
+check because `ctz(0)` is undefined. `p - s` counts all preceding bytes, and the
+lane index completes the string length.
+
+```c
+p += 32;
+```
+
+When the mask is zero, all 32 bytes are nonzero and the pointer advances by one
+complete vector. The unconditional vector loop repeats until a terminator is
+found, as required for a valid C string.
 
 Aligning before the vector loop lets the function use `_mm256_load_si256()`.
 Because common page sizes are multiples of 32, an aligned 32-byte load does not
@@ -204,11 +284,51 @@ a valid string terminator near a page boundary.
 
 ### SIMD copy
 
-`ft_memcpy()` uses `_mm256_loadu_si256()` and `_mm256_storeu_si256()` to copy a
-complete 32-byte block per loop iteration. The `u` means unaligned, so neither
-address needs special alignment. Pointer updates and the loop branch happen
-once per block instead of once per byte. A scalar loop copies the final zero to
-31 bytes, and the function assumes that source and destination do not overlap.
+The internal declaration enables AVX2 for the copy helper:
+
+```c
+void ft_memcpy(char *dst, const char *src,
+    size_t len) __attribute__((target("avx2")));
+```
+
+The vector loop runs only while a complete block is available:
+
+```c
+while (len >= 32)
+```
+
+This guard prevents a 32-byte load or store from extending beyond the requested
+range. Each iteration performs one vector load and one vector store:
+
+```c
+_mm256_storeu_si256((__m256i *)dst,
+    _mm256_loadu_si256((const __m256i *)src));
+```
+
+The inner intrinsic loads 32 source bytes into a temporary vector before the
+outer intrinsic stores that vector to the destination. The pointer casts expose
+the byte addresses as vector addresses. The `u` suffix means unaligned, so
+neither pointer must be divisible by 32. These operations do not provide
+`memmove()` semantics; this helper is called only with non-overlapping regions.
+
+```c
+dst += 32;
+src += 32;
+len -= 32;
+```
+
+Both pointers advance past the copied block and the remaining byte count drops
+by 32. Pointer updates and the loop branch therefore happen once per block
+instead of once per byte.
+
+```c
+while (len-- > 0)
+    *dst++ = *src++;
+```
+
+After the vector loop, zero to 31 bytes remain. The scalar tail copies one byte
+and advances both pointers until the original requested length is exhausted.
+When `len` is zero, the loop body does not run.
 
 SIMD does not guarantee a 32-times speedup. System calls, cache state, memory
 bandwidth, short inputs, and scalar prefix or tail work still matter. It removes
@@ -261,9 +381,6 @@ Compared with `glibc`, this project is intentionally tiny and educational:
 - parsing is represented explicitly through `t_format` rather than through a much
   larger internal formatting engine.
 
-Compared with Zig's `std.debug.print`, this project follows the usual C
-variadic approach instead of compile-time checked formatting.
-
 By design, the subject in general does **not** provide compile-time static
 checks to verify that the number of provided arguments matches the format string
 or that every argument type matches its conversion specifier. As with classic
@@ -275,15 +392,11 @@ function properly.
 Classic references used for the project and for understanding `printf`:
 
 - the 42 subject
-- `man 3 printf`
-- `man 3 stdarg`
-- `man 2 write`
-- Variadic functions in C:
-  <https://www.geeksforgeeks.org/c/variadic-functions-in-c/>
-- glibc `printf` source:
-  <https://github.com/lattera/glibc/blob/master/stdio-common/printf.c>
-- Zig `std.debug.print` documentation, used only as a brief comparison point:
-  <https://ziglang.org/documentation/0.16.0/std/#std.debug.print>
+- [`printf(3)`](https://man7.org/linux/man-pages/man3/printf.3.html)
+- [`stdarg(3)`](https://man7.org/linux/man-pages/man3/stdarg.3.html)
+- [`write(2)`](https://man7.org/linux/man-pages/man2/write.2.html)
+- [Variadic functions in C](https://www.geeksforgeeks.org/c/variadic-functions-in-c/)
+- [glibc `printf` source](https://github.com/lattera/glibc/blob/master/stdio-common/printf.c)
 - [GCC x86 function attributes](https://gcc.gnu.org/onlinedocs/gcc/x86-Function-Attributes.html)
   documents per-function `target("avx2")` compilation.
 - [Clang attribute reference](https://clang.llvm.org/docs/AttributeReference.html#target)
