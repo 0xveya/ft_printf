@@ -45,52 +45,29 @@ static void	ft_prepare_intfmt(t_intfmt *v, int n, t_format *f)
 		v->pad = 0;
 }
 
-static int	ft_write_int_part(int *count, char c, int n)
+static void	ft_write_int_body(t_writer *w, t_intfmt *v)
 {
-	int	written;
-
-	written = ft_putnchar_count(c, n);
-	if (written < 0)
-		return (-1);
-	*count += written;
-	return (0);
+	if (v->sign)
+		ft_writer_char(w, (char)v->sign);
+	ft_writer_repeat(w, '0', (size_t)v->zeroes);
+	if (v->digits_len != 0)
+		ft_putnbr_base_writer(w, (unsigned long)v->nb, "0123456789");
 }
 
-static int	ft_write_int_body(t_intfmt *v, int *count)
-{
-	int	written;
-
-	if (v->sign && ft_putchar_count((char)v->sign) < 0)
-		return (-1);
-	*count += (v->sign != 0);
-	if (ft_write_int_part(count, '0', v->zeroes) < 0)
-		return (-1);
-	if (v->digits_len == 0)
-		return (0);
-	written = ft_putnbr_base_count((unsigned long)v->nb, "0123456789");
-	if (written < 0)
-		return (-1);
-	*count += written;
-	return (0);
-}
-
-int	ft_print_int_fmt(int n, t_format *f)
+int	ft_print_int_fmt(t_writer *w, int n, t_format *f)
 {
 	t_intfmt	v;
-	int			count;
 
 	ft_prepare_intfmt(&v, n, f);
-	count = 0;
 	if (!f->minus && f->zero)
 	{
 		v.zeroes += v.pad;
 		v.pad = 0;
 	}
-	if (!f->minus && ft_write_int_part(&count, ' ', v.pad) < 0)
-		return (-1);
-	if (ft_write_int_body(&v, &count) < 0)
-		return (-1);
-	if (f->minus && ft_write_int_part(&count, ' ', v.pad) < 0)
-		return (-1);
-	return (count);
+	if (!f->minus)
+		ft_writer_repeat(w, ' ', (size_t)v.pad);
+	ft_write_int_body(w, &v);
+	if (f->minus)
+		ft_writer_repeat(w, ' ', (size_t)v.pad);
+	return (!w->error);
 }

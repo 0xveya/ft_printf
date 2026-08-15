@@ -12,37 +12,6 @@
 
 #include "ft_printf_internal.h"
 
-int	ft_write_count(char *s, int len)
-{
-	if (write(1, s, len) != len)
-		return (-1);
-	return (len);
-}
-
-int	ft_putchar_count(char c)
-{
-	return (ft_write_count(&c, 1));
-}
-
-int	ft_putnchar_count(char c, int n)
-{
-	int	i;
-	int	count;
-	int	written;
-
-	i = 0;
-	count = 0;
-	while (i < n)
-	{
-		written = ft_putchar_count(c);
-		if (written < 0)
-			return (-1);
-		count += written;
-		i++;
-	}
-	return (count);
-}
-
 void	ft_format_init(t_format *f)
 {
 	f->minus = 0;

@@ -12,7 +12,8 @@
 
 #include "ft_printf_internal.h"
 
-int	ft_print_percent_fmt(t_format *f)
+int	ft_print_percent_fmt(t_writer *w, t_format *f)
 {
-	return ((void)f, ft_putchar_count('%'));
+	(void)f;
+	return (ft_writer_char(w, '%'));
 }

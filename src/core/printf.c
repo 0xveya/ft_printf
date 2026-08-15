@@ -16,39 +16,42 @@
 # include <stdio.h>
 #endif
 
-static int	ft_print_next(const char *fmt, int *i, va_list args)
+static void	ft_print_next(t_writer *w, const char *fmt, int *i, va_list args)
 {
 	t_format	f;
 
 	if (fmt[*i] != '%')
-		return (ft_putchar_count(fmt[(*i)++]));
+	{
+		ft_writer_char(w, fmt[*i]);
+		(*i)++;
+		return ;
+	}
 	(*i)++;
 	ft_format_init(&f);
 	*i = ft_parse_format(fmt, *i, &f);
 	ft_format_normalize(&f);
-	return (ft_dispatch_print(&f, args));
+	ft_dispatch_print(w, &f, args);
 }
 
 int	ft_printf(const char *fmt, ...)
 {
-	va_list	args;
-	int		i;
-	int		count;
-	int		written;
+	t_writer	w;
+	va_list		args;
+	int			i;
 
 	if (!fmt)
 		return (-1);
+	w = (t_writer){0};
 	i = 0;
-	count = 0;
 	va_start(args, fmt);
-	while (fmt[i])
-	{
-		written = ft_print_next(fmt, &i, args);
-		if (written < 0)
-			return (va_end(args), -1);
-		count += written;
-	}
-	return (va_end(args), count);
+	while (fmt[i] && !w.error)
+		ft_print_next(&w, fmt, &i, args);
+	va_end(args);
+	if (!w.error)
+		ft_writer_flush(&w);
+	if (w.error)
+		return (-1);
+	return (w.total);
 }
 
 /* Compile with -DFT_PRINTF_TEST to enable this local test entry point. */

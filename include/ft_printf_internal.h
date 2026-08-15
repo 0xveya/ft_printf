@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/25 01:24:51 by sfurst           #+#    #+#              */
-/*   Updated: 2026/05/07 20:29:04 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/08/15 23:14:44 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 # define FT_PRINTF_INTERNAL_H
 
 # include "ft_printf.h"
+# include <stddef.h>
 # include <unistd.h>
+
+# define FT_PRINTF_BUFFER_SIZE 4096
 
 typedef enum e_conv
 {
@@ -51,26 +54,41 @@ typedef struct s_intfmt
 	int		pad;
 }			t_intfmt;
 
+typedef struct s_writer
+{
+	char	buf[FT_PRINTF_BUFFER_SIZE];
+	size_t	len;
+	int		total;
+	int		error;
+}			t_writer;
+
 t_conv		ft_char_to_conv(char c);
-int			ft_dispatch_print(t_format *f, va_list args);
+
+int			ft_dispatch_print(t_writer *w, t_format *f, va_list args);
+
 void		ft_format_init(t_format *f);
 void		ft_format_normalize(t_format *f);
 int			ft_is_flag(char c);
 int			ft_parse_format(const char *fmt, int i, t_format *f);
-int			ft_putchar_count(char c);
-int			ft_putnchar_count(char c, int n);
-int			ft_write_count(char *s, int len);
 
-int			ft_print_char_fmt(int c, t_format *f);
-int			ft_print_hex_low_fmt(unsigned int n, t_format *f);
-int			ft_print_hex_up_fmt(unsigned int n, t_format *f);
-int			ft_print_int_fmt(int n, t_format *f);
-int			ft_print_percent_fmt(t_format *f);
-int			ft_print_ptr_fmt(void *ptr, t_format *f);
-int			ft_print_str_fmt(char *s, t_format *f);
-int			ft_print_uint_fmt(unsigned int n, t_format *f);
-int			ft_putnbr_base_count(unsigned long n, char *base);
+void		*ft_memcpy(void *dst, const void *src, size_t n);
+int			ft_writer_char(t_writer *w, char c);
+int			ft_writer_flush(t_writer *w);
+int			ft_writer_repeat(t_writer *w, char c, size_t n);
+int			ft_writer_write(t_writer *w, const char *s, size_t len);
 
-int			ft_strlen(char *s);
+int			ft_print_char_fmt(t_writer *w, int c, t_format *f);
+int			ft_print_hex_low_fmt(t_writer *w, unsigned int n, t_format *f);
+int			ft_print_hex_up_fmt(t_writer *w, unsigned int n, t_format *f);
+int			ft_print_int_fmt(t_writer *w, int n, t_format *f);
+int			ft_print_percent_fmt(t_writer *w, t_format *f);
+int			ft_print_ptr_fmt(t_writer *w, void *ptr, t_format *f);
+int			ft_print_str_fmt(t_writer *w, const char *s, t_format *f);
+int			ft_print_uint_fmt(t_writer *w, unsigned int n, t_format *f);
+
+int			ft_putnbr_base_writer(t_writer *w, unsigned long n,
+				const char *base);
+
+int			ft_strlen(const char *s);
 
 #endif

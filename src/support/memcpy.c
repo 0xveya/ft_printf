@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   print_hex.c                                       :+:      :+:    :+:    */
+/*   memcpy.c                                          :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/04/26 18:13:39 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:51:52 by sfurst          ###   ########.fr        */
+/*   Created: 2026/08/15 23:32:22 by sfurst           #+#    #+#              */
+/*   Updated: 2026/08/15 23:32:23 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf_internal.h"
 
-int	ft_print_hex_low_fmt(t_writer *w, unsigned int n, t_format *f)
+void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0x", 2);
-	ft_putnbr_base_writer(w, n, "0123456789abcdef");
-	return (!w->error);
-}
+	unsigned char		*dstc;
+	const unsigned char	*srcc;
 
-int	ft_print_hex_up_fmt(t_writer *w, unsigned int n, t_format *f)
-{
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0X", 2);
-	ft_putnbr_base_writer(w, n, "0123456789ABCDEF");
-	return (!w->error);
+	dstc = (unsigned char *)dst;
+	srcc = (const unsigned char *)src;
+	while (n--)
+		*dstc++ = *srcc++;
+	return (dst);
 }

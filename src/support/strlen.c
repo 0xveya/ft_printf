@@ -1,29 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   print_hex.c                                       :+:      :+:    :+:    */
+/*   strlen.c                                          :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/04/26 18:13:39 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:51:52 by sfurst          ###   ########.fr        */
+/*   Created: 2026/08/15 23:32:29 by sfurst           #+#    #+#              */
+/*   Updated: 2026/08/15 23:32:30 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf_internal.h"
 
-int	ft_print_hex_low_fmt(t_writer *w, unsigned int n, t_format *f)
+int	ft_strlen(const char *s)
 {
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0x", 2);
-	ft_putnbr_base_writer(w, n, "0123456789abcdef");
-	return (!w->error);
-}
+	int	len;
 
-int	ft_print_hex_up_fmt(t_writer *w, unsigned int n, t_format *f)
-{
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0X", 2);
-	ft_putnbr_base_writer(w, n, "0123456789ABCDEF");
-	return (!w->error);
+	len = 0;
+	while ((s[len]) && (len++, 1))
+		;
+	return (len);
 }

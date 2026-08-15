@@ -12,7 +12,8 @@
 
 #include "ft_printf_internal.h"
 
-int	ft_print_uint_fmt(unsigned int n, t_format *f)
+int	ft_print_uint_fmt(t_writer *w, unsigned int n, t_format *f)
 {
-	return ((void)f, ft_putnbr_base_count(n, "0123456789"));
+	(void)f;
+	return (ft_putnbr_base_writer(w, n, "0123456789"));
 }

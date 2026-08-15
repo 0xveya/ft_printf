@@ -13,27 +13,12 @@
 #include "ft_printf_internal.h"
 #include <stdint.h>
 
-static int	ft_putstr_count(char *s)
+int	ft_print_ptr_fmt(t_writer *w, void *ptr, t_format *f)
 {
-	int	len;
-
-	len = ft_strlen(s);
-	return (ft_write_count(s, len));
-}
-
-int	ft_print_ptr_fmt(void *ptr, t_format *f)
-{
-	int	count;
-	int	written;
-
 	(void)f;
 	if (!ptr)
-		return (ft_putstr_count("(nil)"));
-	count = ft_putstr_count("0x");
-	if (count < 0)
-		return (-1);
-	written = ft_putnbr_base_count((uintptr_t)ptr, "0123456789abcdef");
-	if (written < 0)
-		return (-1);
-	return (count + written);
+		return (ft_writer_write(w, "(nil)", 5));
+	ft_writer_write(w, "0x", 2);
+	ft_putnbr_base_writer(w, (uintptr_t)ptr, "0123456789abcdef");
+	return (!w->error);
 }
