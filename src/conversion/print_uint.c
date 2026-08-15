@@ -14,6 +14,12 @@
 
 int	ft_print_uint_fmt(t_writer *w, unsigned int n, t_format *f)
 {
+	char	buf[32];
+	char	*begin;
+	char	*end;
+
 	(void)f;
-	return (ft_putnbr_base_writer(w, n, "0123456789"));
+	end = buf + sizeof(buf);
+	begin = ft_u64_dec(end, (uint64_t)n);
+	return (ft_writer_write(w, begin, (size_t)(end - begin)));
 }

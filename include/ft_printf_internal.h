@@ -15,6 +15,7 @@
 
 # include "ft_printf.h"
 # include <stddef.h>
+# include <stdint.h>
 # include <unistd.h>
 
 # define FT_PRINTF_BUFFER_SIZE 4096
@@ -47,11 +48,11 @@ typedef struct s_format
 
 typedef struct s_intfmt
 {
-	long	nb;
-	int		sign;
-	int		digits_len;
-	int		zeroes;
-	int		pad;
+	uint64_t	magnitude;
+	int			sign;
+	int			digits_len;
+	int			zeroes;
+	int			pad;
 }			t_intfmt;
 
 typedef struct s_writer
@@ -85,8 +86,11 @@ int			ft_print_ptr_fmt(t_writer *w, void *ptr, t_format *f);
 int			ft_print_str_fmt(t_writer *w, const char *s, t_format *f);
 int			ft_print_uint_fmt(t_writer *w, unsigned int n, t_format *f);
 
-int			ft_putnbr_base_writer(t_writer *w, unsigned long n,
-				const char *base);
+char		*ft_u64_base(char *end, uint64_t n, uint32_t base,
+				const char *digits);
+char		*ft_u64_dec(char *end, uint64_t n);
+char		*ft_u64_pow2(char *end, uint64_t n, uint32_t shift,
+				const char *digits);
 
 int			ft_strlen(const char *s) __attribute__((target("avx2")));
 

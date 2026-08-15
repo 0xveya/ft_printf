@@ -25,6 +25,7 @@ SRC_DIR		= src
 OBJ_DIR		= obj
 TEST_OBJ_DIR	= obj_test
 SRCS		= $(SRC_DIR)/conversion/print_char.c \
+			  $(SRC_DIR)/conversion/integer_digits.c \
 			  $(SRC_DIR)/conversion/print_hex.c \
 			  $(SRC_DIR)/conversion/print_int.c \
 			  $(SRC_DIR)/conversion/print_percent.c \
@@ -37,7 +38,6 @@ SRCS		= $(SRC_DIR)/conversion/print_char.c \
 			  $(SRC_DIR)/format/parse.c \
 			  $(SRC_DIR)/format/parse_utils.c \
 			  $(SRC_DIR)/support/helpers.c \
-			  $(SRC_DIR)/support/helpers2.c \
 			  $(SRC_DIR)/support/memcpy.c \
 			  $(SRC_DIR)/support/strlen.c \
 			  $(SRC_DIR)/support/writer.c

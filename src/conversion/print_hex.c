@@ -12,18 +12,30 @@
 
 #include "ft_printf_internal.h"
 
+static int	ft_print_hex(t_writer *w, uint32_t n, t_format *f,
+		const char *alphabet)
+{
+	char	buf[16];
+	char	*begin;
+	char	*end;
+
+	if (f->hash && n != 0)
+	{
+		ft_writer_char(w, '0');
+		ft_writer_char(w, alphabet[16]);
+	}
+	end = buf + sizeof(buf);
+	begin = ft_u64_pow2(end, n, 4, alphabet);
+	ft_writer_write(w, begin, (size_t)(end - begin));
+	return (!w->error);
+}
+
 int	ft_print_hex_low_fmt(t_writer *w, unsigned int n, t_format *f)
 {
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0x", 2);
-	ft_putnbr_base_writer(w, n, "0123456789abcdef");
-	return (!w->error);
+	return (ft_print_hex(w, (uint32_t)n, f, "0123456789abcdefx"));
 }
 
 int	ft_print_hex_up_fmt(t_writer *w, unsigned int n, t_format *f)
 {
-	if (f->hash && n != 0)
-		ft_writer_write(w, "0X", 2);
-	ft_putnbr_base_writer(w, n, "0123456789ABCDEF");
-	return (!w->error);
+	return (ft_print_hex(w, (uint32_t)n, f, "0123456789ABCDEFX"));
 }
