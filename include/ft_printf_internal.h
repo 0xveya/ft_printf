@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   ft_printf.h                                       :+:      :+:    :+:    */
+/*   ft_printf_internal.h                              :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#ifndef FT_PRINTF_INTERNAL_H
+# define FT_PRINTF_INTERNAL_H
 
-# include <stdarg.h>
+# include "ft_printf.h"
 # include <unistd.h>
 
 typedef enum e_conv
@@ -26,7 +26,7 @@ typedef enum e_conv
 	conv_uint,
 	conv_hex_low,
 	conv_hex_up,
-	conv_percentt
+	conv_percent
 }			t_conv;
 
 typedef struct s_format
@@ -57,7 +57,6 @@ void		ft_format_init(t_format *f);
 void		ft_format_normalize(t_format *f);
 int			ft_is_flag(char c);
 int			ft_parse_format(const char *fmt, int i, t_format *f);
-int			ft_printf(const char *format, ...);
 int			ft_putchar_count(char c);
 int			ft_putnchar_count(char c, int n);
 int			ft_write_count(char *s, int len);

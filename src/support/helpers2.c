@@ -1,38 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   print_pointer.c                                   :+:      :+:    :+:    */
+/*   helpers2.c                                        :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/04/26 18:14:56 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:40:05 by sfurst          ###   ########.fr        */
+/*   Created: 2026/04/26 18:48:24 by sfurst           #+#    #+#              */
+/*   Updated: 2026/04/26 18:48:32 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <stdint.h>
+#include "ft_printf_internal.h"
 
-static int	ft_putstr_count(char *s)
+int	ft_strlen(char *s)
 {
 	int	len;
 
-	len = ft_strlen(s);
-	return (ft_write_count(s, len));
+	len = 0;
+	while ((s[len]) && (len++, 1))
+		;
+	return (len);
 }
 
-int	ft_print_ptr_fmt(void *ptr, t_format *f)
+int	ft_putnbr_base_count(unsigned long n, char *base)
 {
-	int	count;
-	int	written;
+	int				count;
+	int				written;
+	unsigned long	base_len;
 
-	(void)f;
-	if (!ptr)
-		return (ft_putstr_count("(nil)"));
-	count = ft_putstr_count("0x");
-	if (count < 0)
-		return (-1);
-	written = ft_putnbr_base_count((uintptr_t)ptr, "0123456789abcdef");
+	count = 0;
+	base_len = ft_strlen(base);
+	if (n >= base_len)
+	{
+		count = ft_putnbr_base_count(n / base_len, base);
+		if (count < 0)
+			return (-1);
+	}
+	written = ft_putchar_count(base[n % base_len]);
 	if (written < 0)
 		return (-1);
 	return (count + written);

@@ -10,7 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "ft_printf_internal.h"
+
+#ifdef FT_PRINTF_TEST
+# include <stdio.h>
+#endif
 
 static int	ft_print_next(const char *fmt, int *i, va_list args)
 {
@@ -46,3 +50,15 @@ int	ft_printf(const char *fmt, ...)
 	}
 	return (va_end(args), count);
 }
+
+/* Compile with -DFT_PRINTF_TEST to enable this local test entry point. */
+#ifdef FT_PRINTF_TEST
+
+int	main(void)
+{
+	ft_printf("ft_printf: %04d\n", 67);
+	printf("printf:    %04d\n", 67);
+	return (0);
+}
+
+#endif

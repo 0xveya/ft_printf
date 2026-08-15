@@ -14,42 +14,50 @@ NAME		= libftprintf.a
 
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
+CPPFLAGS	= -Iinclude -MMD -MP
 RM			= rm -f
 
-SRC_DIR		= .
-SRCS		= $(SRC_DIR)/helpers.c \
-			  $(SRC_DIR)/helpers2.c \
-			  $(SRC_DIR)/main.c \
-			  $(SRC_DIR)/normalize.c \
-			  $(SRC_DIR)/parse.c \
-			  $(SRC_DIR)/parse_utils.c \
-			  $(SRC_DIR)/print_char.c \
-			  $(SRC_DIR)/print_hex.c \
-			  $(SRC_DIR)/print_int.c \
-			  $(SRC_DIR)/print_percent.c \
-			  $(SRC_DIR)/print_pointer.c \
-			  $(SRC_DIR)/print_string.c \
-			  $(SRC_DIR)/print_uint.c \
-			  $(SRC_DIR)/printf.c \
-			  $(SRC_DIR)/printf_dispatch.c
+JOBS		?= $(shell nproc)
+MAKEFLAGS	+= -j $(JOBS) -l $(JOBS)
+
+SRC_DIR		= src
+OBJ_DIR		= obj
+SRCS		= $(SRC_DIR)/conversion/print_char.c \
+			  $(SRC_DIR)/conversion/print_hex.c \
+			  $(SRC_DIR)/conversion/print_int.c \
+			  $(SRC_DIR)/conversion/print_percent.c \
+			  $(SRC_DIR)/conversion/print_pointer.c \
+			  $(SRC_DIR)/conversion/print_string.c \
+			  $(SRC_DIR)/conversion/print_uint.c \
+			  $(SRC_DIR)/core/printf.c \
+			  $(SRC_DIR)/core/printf_dispatch.c \
+			  $(SRC_DIR)/format/normalize.c \
+			  $(SRC_DIR)/format/parse.c \
+			  $(SRC_DIR)/format/parse_utils.c \
+			  $(SRC_DIR)/support/helpers.c \
+			  $(SRC_DIR)/support/helpers2.c
 
 
 AR		= ar
 ARFLAGS		= rcs
 
-OBJS		= $(SRCS:.c=.o)
+OBJS		= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 DEPS		= $(OBJS:.o=.d)
 
 all: $(NAME)
 
+bonus: $(NAME)
+
 $(NAME): $(OBJS)
+	$(RM) $(NAME)
 	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS)  -c $< -o $@
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) -r $(OBJ_DIR)
 
 fclean: clean
 	$(RM) $(NAME)
@@ -58,5 +66,7 @@ re:
 	$(MAKE) fclean
 	$(MAKE) all
 
-.PHONY: all clean fclean re
+-include $(DEPS)
+
+.PHONY: all bonus clean fclean re
 .DEFAULT_GOAL := all
