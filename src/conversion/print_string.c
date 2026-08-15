@@ -20,15 +20,15 @@ int	ft_print_str_fmt(t_writer *w, const char *s, t_format *f)
 	if (!s)
 		s = "(null)";
 	len = ft_strlen(s);
-	if (f->has_precision && f->precision < len)
+	if (f->precision >= 0 && f->precision < len)
 		len = f->precision;
 	pad = f->width - len;
 	if (pad < 0)
 		pad = 0;
-	if (!f->minus)
+	if (!ft_format_has(f, FMT_MINUS))
 		ft_writer_repeat(w, ' ', (size_t)pad);
 	ft_writer_write(w, s, (size_t)len);
-	if (f->minus)
+	if (ft_format_has(f, FMT_MINUS))
 		ft_writer_repeat(w, ' ', (size_t)pad);
 	return (!w->error);
 }

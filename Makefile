@@ -12,6 +12,7 @@
 
 NAME		= libftprintf.a
 TEST_NAME	= ft_printf_test
+TEST_SRC	= tests/main.c
 
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
@@ -34,10 +35,8 @@ SRCS		= $(SRC_DIR)/conversion/print_char.c \
 			  $(SRC_DIR)/conversion/print_uint.c \
 			  $(SRC_DIR)/core/printf.c \
 			  $(SRC_DIR)/core/printf_dispatch.c \
-			  $(SRC_DIR)/format/normalize.c \
 			  $(SRC_DIR)/format/parse.c \
 			  $(SRC_DIR)/format/parse_utils.c \
-			  $(SRC_DIR)/support/helpers.c \
 			  $(SRC_DIR)/support/memcpy.c \
 			  $(SRC_DIR)/support/strlen.c \
 			  $(SRC_DIR)/support/writer.c
@@ -48,7 +47,8 @@ ARFLAGS		= rcs
 
 OBJS		= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 DEPS		= $(OBJS:.o=.d)
-TEST_OBJS	= $(SRCS:$(SRC_DIR)/%.c=$(TEST_OBJ_DIR)/%.o)
+TEST_OBJS	= $(SRCS:$(SRC_DIR)/%.c=$(TEST_OBJ_DIR)/%.o) \
+			  $(TEST_OBJ_DIR)/main.o
 TEST_DEPS	= $(TEST_OBJS:.o=.d)
 
 all: $(NAME)
@@ -71,7 +71,11 @@ $(TEST_NAME): $(TEST_OBJS)
 
 $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -DFT_PRINTF_TEST -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+$(TEST_OBJ_DIR)/main.o: $(TEST_SRC) Makefile
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
 	$(RM) -r $(OBJ_DIR) $(TEST_OBJ_DIR)

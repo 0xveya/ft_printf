@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/26 18:14:56 by sfurst           #+#    #+#              */
-/*   Updated: 2026/04/26 18:40:05 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/08/15 23:59:50 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ int	ft_print_ptr_fmt(t_writer *w, void *ptr, t_format *f)
 		return (ft_writer_write(w, "(nil)", 5));
 	ft_writer_write(w, "0x", 2);
 	end = buf + sizeof(buf);
-	begin = ft_u64_pow2(end, (uint64_t)(uintptr_t)ptr, 4,
-			"0123456789abcdef");
+	begin = ft_u64_pow2(end, (uint64_t)(uintptr_t)ptr, 4, "0123456789abcdef");
 	ft_writer_write(w, begin, (size_t)(end - begin));
 	return (!w->error);
 }

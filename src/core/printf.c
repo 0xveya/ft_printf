@@ -12,10 +12,6 @@
 
 #include "ft_printf_internal.h"
 
-#ifdef FT_PRINTF_TEST
-# include <stdio.h>
-#endif
-
 static void	ft_print_next(t_writer *w, const char *fmt, int *i, va_list args)
 {
 	t_format	f;
@@ -29,7 +25,6 @@ static void	ft_print_next(t_writer *w, const char *fmt, int *i, va_list args)
 	(*i)++;
 	ft_format_init(&f);
 	*i = ft_parse_format(fmt, *i, &f);
-	ft_format_normalize(&f);
 	ft_dispatch_print(w, &f, args);
 }
 
@@ -53,15 +48,3 @@ int	ft_printf(const char *fmt, ...)
 		return (-1);
 	return (w.total);
 }
-
-/* Compile with -DFT_PRINTF_TEST to enable this local test entry point. */
-#ifdef FT_PRINTF_TEST
-
-int	main(void)
-{
-	ft_printf("ft_printf: %04d\n", 67);
-	printf("printf:    %04d\n", 67);
-	return (0);
-}
-
-#endif

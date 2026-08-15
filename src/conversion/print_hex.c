@@ -19,7 +19,7 @@ static int	ft_print_hex(t_writer *w, uint32_t n, t_format *f,
 	char	*begin;
 	char	*end;
 
-	if (f->hash && n != 0)
+	if (ft_format_has(f, FMT_HASH) && n != 0)
 	{
 		ft_writer_char(w, '0');
 		ft_writer_char(w, alphabet[16]);

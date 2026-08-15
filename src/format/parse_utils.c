@@ -12,9 +12,30 @@
 
 #include "ft_printf_internal.h"
 
-int	ft_is_flag(char c)
+int	ft_format_has(const t_format *f, uint32_t flag)
 {
-	return (c == '-' || c == '0' || c == '#' || c == '+' || c == ' ');
+	return ((f->flags & flag) != 0);
+}
+
+void	ft_format_init(t_format *f)
+{
+	*f = (t_format){0};
+	f->precision = -1;
+}
+
+uint32_t	ft_char_to_flag(char c)
+{
+	if (c == '-')
+		return (FMT_MINUS);
+	if (c == '0')
+		return (FMT_ZERO);
+	if (c == '#')
+		return (FMT_HASH);
+	if (c == '+')
+		return (FMT_PLUS);
+	if (c == ' ')
+		return (FMT_SPACE);
+	return (0);
 }
 
 t_conv	ft_char_to_conv(char c)

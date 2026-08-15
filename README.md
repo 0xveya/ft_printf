@@ -9,13 +9,11 @@ libc's internal formatting machinery.
 The mandatory subject requires support for the conversions `cspdiuxX%`. This
 project also explores the central idea behind `printf`: **variadic functions**.
 Arguments are read from a `va_list`, parsed into a small formatting structure,
-normalized according to `printf` rules, and then dispatched to the matching
-printer.
+and dispatched to the matching printer.
 
 In this version, the implementation is organized around a `t_format` struct that
-stores parsed flags, width, precision, and conversion type. The code is split
-into small source files so the parsing, normalization, dispatch, and rendering
-steps remain easy to test and reason about.
+stores parsed flags, width, precision, and conversion type. Output passes through
+a 4096-byte writer so formatting does not require one system call per character.
 
 ## Instructions
 
@@ -42,6 +40,17 @@ Rebuild from scratch:
 ```sh
 make re
 ```
+
+Build and run the evaluator-oriented comparison program:
+
+```sh
+make test
+```
+
+The test output is split into sections and compares both rendered output and
+return values against libc `printf`. It covers all required conversions,
+integer limits, null values, width, precision, conflicting flags, empty strings,
+embedded NUL characters, and a percent conversion at the end of a format.
 
 Use the library in another C file:
 
@@ -76,12 +85,12 @@ The implementation follows a small pipeline:
 3. When `%` is found, parsing begins.
 4. The parser reads flags, width, precision, and the final conversion type into
    a `t_format` struct.
-5. A normalization step resolves conflicting flags such as `-` overriding `0`,
-   `+` overriding space, and precision disabling zero-padding for numeric
-   conversions.
-6. A dispatcher selects the right printing function for `c`, `s`, `p`, `d`,
+5. A dispatcher selects the right printing function for `c`, `s`, `p`, `d`,
    `i`, `u`, `x`, `X`, or `%`.
-7. Each printer returns the number of written characters so the total result
+6. Each printer writes through a shared buffer and the final result reports the
+   number of produced characters.
+7. The writer flushes when full and once more before `ft_printf()` returns, so
+   the total result
    matches the `printf()` contract.
 
 ### Core data structure
@@ -89,35 +98,68 @@ The implementation follows a small pipeline:
 ```c
 typedef struct s_format
 {
-	int		minus;
-	int		zero;
-	int		hash;
-	int		plus;
-	int		space;
-	int		width;
-	int		precision;
-	int		has_precision;
-	t_conv	type;
-}t_format;
+	uint32_t	flags;
+	int			width;
+	int			precision;
+	t_conv		type;
+} t_format;
 ```
 
 This structure was chosen because `printf` formatting is naturally a compact set
-of orthogonal fields. A struct keeps parsing state explicit and makes the code
-more extensible than passing many separate integers between functions.
+of orthogonal fields. The five boolean flags occupy bits in one integer, while a
+precision of `-1` means that no precision was provided. This removes separate
+boolean fields without hiding the parser state.
 
 For signed integer formatting, an additional helper struct is used to precompute
 sign, digit count, zero padding, and outer padding before printing. This avoids
 recomputing formatting values across multiple branches.
+
+### Integer digit conversion
+
+Integers are rendered backwards into a fixed-size local buffer and then written
+as one span. Decimal conversion handles two digits per division by 100 and uses
+a lookup string containing `00` through `99`. Compared with taking one digit per
+division by 10, this roughly halves the number of division and remainder steps.
+
+Hexadecimal conversion does not divide at all. Because base 16 is a power of
+two, the next digit is selected with a four-bit mask and the value advances with
+a four-bit right shift. The same routine formats pointers with a 64-bit input.
+
+### Buffered and vectorized helpers
+
+The writer accumulates up to 4096 bytes before calling `write()`. This matters
+most for width and precision padding, where the older implementation issued one
+system call for every repeated character. `ft_memcpy` and `ft_strlen` use AVX2
+to process 32-byte blocks, then use a scalar tail where required. The
+function-level `target("avx2")` attribute avoids enabling AVX2 for unrelated
+functions, but there is no runtime fallback for CPUs without AVX2.
+
+### Benchmark against the older version
+
+The older version is commit `4268c48b`, before the buffered writer, AVX2 memory
+helpers, and fixed-width digit conversion. Lower is better. Each value is the
+median of five runs with output redirected to `/dev/null`.
+
+| Workload | Calls | Older version | Current version | Speedup |
+| --- | ---: | ---: | ---: | ---: |
+| 10-digit decimal plus newline | 100,000 | 143.6 ms | 22.4 ms | 6.4x |
+| Width-4096 decimal plus newline | 2,000 | 866.2 ms | 83.6 ms | 10.4x |
+
+Measurements were taken on an Intel Core i5-11500H with GCC 16.2.1 and the
+project's `-Wall -Wextra -Werror` flags, without an optimization flag. The
+benchmark measures the combined design rather than claiming that digit lookup,
+SIMD, or buffering alone accounts for the full difference. Results will vary by
+CPU, kernel, and output target.
 
 ## Source Overview
 
 - `printf.c`: main loop over the format string.
 - `parse.c`: parses flags, width, precision, and conversion sequence.
 - `parse_utils.c`: helper functions for flag detection and conversion lookup.
-- `normalize.c`: resolves conflicting formatting rules after parsing.
 - `printf_dispatch.c`: dispatches a parsed format to the right print function.
-- `helpers.c`: character output, repeated character output, and format init.
-- `helpers2.c`: local utility helpers such as `ft_strlen`.
+- `writer.c`: buffers output, flushes writes, and tracks errors and length.
+- `integer_digits.c`: fixed-width decimal, hexadecimal, and generic conversion.
+- `memcpy.c` and `strlen.c`: AVX2 bulk memory helpers.
 - `print_char.c`: `%c` handling.
 - `print_string.c`: `%s` handling.
 - `print_pointer.c`: `%p` handling.
@@ -128,9 +170,9 @@ recomputing formatting values across multiple branches.
 
 ## Notes On Design
 
-This project intentionally does **not** copy libc's internal buffering model.
-The subject explicitly says not to reimplement the original buffer management, so
-this version uses direct writes and small helper functions.
+This project uses a small output writer, not libc's internal stream machinery.
+The buffer belongs to one `ft_printf()` call and is flushed directly with
+`write()`.
 
 Compared with `glibc`, this project is intentionally tiny and educational:
 

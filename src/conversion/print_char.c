@@ -19,10 +19,10 @@ int	ft_print_char_fmt(t_writer *w, int c, t_format *f)
 	pad = f->width - 1;
 	if (pad < 0)
 		pad = 0;
-	if (!f->minus)
+	if (!ft_format_has(f, FMT_MINUS))
 		ft_writer_repeat(w, ' ', (size_t)pad);
 	ft_writer_char(w, (char)c);
-	if (f->minus)
+	if (ft_format_has(f, FMT_MINUS))
 		ft_writer_repeat(w, ' ', (size_t)pad);
 	return (!w->error);
 }

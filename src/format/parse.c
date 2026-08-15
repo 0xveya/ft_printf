@@ -14,19 +14,14 @@
 
 static int	ft_parse_flags(const char *s, int i, t_format *f)
 {
-	while (ft_is_flag(s[i]))
+	uint32_t	flag;
+
+	flag = ft_char_to_flag(s[i]);
+	while (flag != 0)
 	{
-		if (s[i] == '-')
-			f->minus = 1;
-		else if (s[i] == '0')
-			f->zero = 1;
-		else if (s[i] == '#')
-			f->hash = 1;
-		else if (s[i] == '+')
-			f->plus = 1;
-		else if (s[i] == ' ')
-			f->space = 1;
+		f->flags |= flag;
 		i++;
+		flag = ft_char_to_flag(s[i]);
 	}
 	return (i);
 }
@@ -45,7 +40,6 @@ static int	ft_parse_precision(const char *s, int i, t_format *f)
 {
 	if (s[i] == '.')
 	{
-		f->has_precision = 1;
 		f->precision = 0;
 		i++;
 		while (s[i] >= '0' && s[i] <= '9')
