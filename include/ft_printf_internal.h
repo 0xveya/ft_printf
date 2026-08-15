@@ -6,7 +6,7 @@
 /*   By: sfurst <sfurst@student.42vienna.com>      #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/04/25 01:24:51 by sfurst           #+#    #+#              */
-/*   Updated: 2026/08/15 23:14:44 by sfurst          ###   ########.fr        */
+/*   Updated: 2026/08/15 23:36:18 by sfurst          ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ void		ft_format_normalize(t_format *f);
 int			ft_is_flag(char c);
 int			ft_parse_format(const char *fmt, int i, t_format *f);
 
-void		*ft_memcpy(void *dst, const void *src, size_t n);
 int			ft_writer_char(t_writer *w, char c);
 int			ft_writer_flush(t_writer *w);
 int			ft_writer_repeat(t_writer *w, char c, size_t n);
@@ -89,6 +88,9 @@ int			ft_print_uint_fmt(t_writer *w, unsigned int n, t_format *f);
 int			ft_putnbr_base_writer(t_writer *w, unsigned long n,
 				const char *base);
 
-int			ft_strlen(const char *s);
+int			ft_strlen(const char *s) __attribute__((target("avx2")));
+
+void		ft_memcpy(char *dst, const char *src,
+				size_t len) __attribute__((target("avx2")));
 
 #endif
