@@ -12,7 +12,7 @@
 
 NAME		= libftprintf.a
 TEST_NAME	= ft_printf_test
-TEST_SRC	= tests/main.c
+TEST_SRC	= tests/main.c tests/formatting.c
 
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
@@ -48,7 +48,7 @@ ARFLAGS		= rcs
 OBJS		= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 DEPS		= $(OBJS:.o=.d)
 TEST_OBJS	= $(SRCS:$(SRC_DIR)/%.c=$(TEST_OBJ_DIR)/%.o) \
-			  $(TEST_OBJ_DIR)/main.o
+			  $(TEST_SRC:tests/%.c=$(TEST_OBJ_DIR)/%.o)
 TEST_DEPS	= $(TEST_OBJS:.o=.d)
 
 all: $(NAME)
@@ -73,7 +73,7 @@ $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
-$(TEST_OBJ_DIR)/main.o: $(TEST_SRC) Makefile
+$(TEST_OBJ_DIR)/%.o: tests/%.c Makefile
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
